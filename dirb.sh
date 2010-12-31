@@ -53,19 +53,19 @@ EOF
 
 # "s" - Save bookmark
 function s() {
+  # build the bookmark file with the contents "$CD directory_path"
   if [ -n "$2" ]; then
-    # build the bookmark file with the contents "$CD directory_path"
     ( echo '$CD ' \"$2\" > ~/.DirB/"$1" ;) > /dev/null 2>&1
   else
-    # build the bookmark file with the contents "$CD directory_path"
     ( echo -n '$CD ' > ~/.DirB/"$1" ;
-    pwd | sed "s/ /\\\\ /g" >> ~/.DirB/"$1" ; ) > /dev/null 2>&1
+    pwd \
+    | sed "s/ /\\\\ /g" >> ~/.DirB/"$1" ; ) > /dev/null 2>&1
   fi
 
   # if the bookmark could not be created, print an error message and
   # exit with a failing return code
   if [ $? != 0 ]; then
-    echo bash: DirB: ~/.DirB/"$1" could not be created >&2
+    echo >&2 "bash: DirB: ~/.DirB/$1 could not be created"
     false
   fi
 
@@ -86,11 +86,11 @@ function g() {
     cd
   else
     # if $1 is in ~/.DirB and does not begin with ".", then go to it
+    # update the bookmark's timestamp and then execute it
+    # else just do a "cd" to the argument, usually a directory path of "-"
     if [ -f ~/.DirB/"$1" -a ${1:0:1} != "." ]; then
-      # update the bookmark's timestamp and then execute it
       touch ~/.DirB/"$1" ;
       CD=cd source ~/.DirB/"$1" ;
-    # else just do a "cd" to the argument, usually a directory path of "-"
     else
       cd "$1"
     fi
@@ -104,19 +104,20 @@ function g() {
 # "dirs -p" after each one.
 function p() {
   # if no argument given, then just pushd and print out the directory stack
+  # if $1 is a dash, then just do a "popd" and print out the directory stack
   if [ -z "$1" ]; then
     pushd > /dev/null && dirs -p
-  # if $1 is a dash, then just do a "popd" and print out the directory stack
   elif [ "$1" == "-" ]; then
     popd > /dev/null
     dirs -p
   else
     # if $1 is in ~/.DirB and does not begin with ".", then go to it
     # and then print out the directory stack
+    # else just do a "pushd" and print out the directory stack
     if [ -f ~/.DirB/"$1" -a "${1:0:1}" != "." ]; then
       touch ~/.DirB/$1 ;
-      CD=pushd source ~/.DirB/$1 > /dev/null && dirs -p ;
-    # else just do a "pushd" and print out the directory stack
+      CD=pushd source ~/.DirB/$1 > /dev/null \
+        && dirs -p ;
     else
       pushd "$1" > /dev/null && dirs -p
     fi
@@ -144,7 +145,9 @@ function sl() {
     )
   elif [ "$1" == "-p" ]; then
     shift
-    ( cd ~/.DirB ; for i in `ls $*`; do  echo "$i: $(d $i)"; done ) \
+    ( cd ~/.DirB ; \
+      for i in $(ls $*); do  echo "$i: $(d $i)"; done \
+    ) \
     | less -FX
   else
     ( cd ~/.DirB ; ls -xt $* ; )
@@ -157,9 +160,11 @@ function r() {
   # if the bookmark file does not exist, complain and exit with a failing code
   if [ -e ~/.DirB/"$1" ]; then
     rm ~/.DirB/"$1"
-    sed -i_bak ~/.bashDirB_envvars -e "/export db_$1=/d" > /dev/null 2>&1
+    sed \
+      -i_bak ~/.bashDirB_envvars \
+      -e "/export db_$1=/d" > /dev/null 2>&1
   else
-    echo bash: DirB: ~/.DirB/"$1" does not exist >&2
+    echo >&2 "bash: DirB: ~/.DirB/$1 does not exist"
     false
   fi
 }
@@ -170,9 +175,12 @@ function d() {
   # if the bookmark exists, then extract its directory path and print it
   # if the bookmark does not exists, complain and exit with a failing code
   if [ -e ~/.DirB/"$1" ]; then
-    head -1 ~/.DirB/"$1" | sed -e 's/\$CD //' -e 's/\\//g'
+    head -1 ~/.DirB/"$1" \
+    | sed \
+        -e 's/\$CD //' \
+        -e 's/\\//g'
   else
-    echo bash: DirB: ~/.DirB/"$1" does not exist >&2
+    echo >&2 "bash: DirB: ~/.DirB/$1 does not exist"
     false
   fi
 }
