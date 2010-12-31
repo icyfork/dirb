@@ -1,0 +1,53 @@
+DESCRIPTION
+
+ Directory Bookmarks for BASH (c) 2009, Ira Chayut, Version 090927
+
+ DirB and its implementation in this file are the product of, and
+ copyrighted by Ira Chayut.  You are granted a non-exclusive, royalty-free
+ license to use, reproduce, modify and create derivative works from DirB;
+ providing that credit is given to DirB as a source material.
+
+ The lastest version is available from: http://www.dirb.info/bashDirB.
+ Ira can be reached at ira@dirb.info.
+
+ Icy forked the source from http://dirb.info/ to customize the script
+ for his own purpose. You can modify, redistribute and create derivative
+ works from Icy's fork, providing that credit is given to DirB as a
+ source material.
+
+USAGE
+
+  In your $HOME/.bashrc
+                  source /path/to/this/dirb.sh
+
+  By default DirB will have the shell echo the current working directory out
+  to the title bars of Xterm windows.  To disable this behavior, comment
+  out the following line in source file
+                  PS1="\[\033]0;\w\007\]\t \!> "
+
+OPERATIONS
+
+  s       Save a directory bookmark
+  g       go to a bookmark or named directory
+  p       push a bookmark/directory onto the dir stack
+  r       remove saved bookmark
+  d       display bookmarked directory path
+  sl      print the list of directory bookmarks
+
+EXAMPLES
+
+  s xyz                  current directory is saved as xyz
+  s xyz ../../dir0/dir1  save relative directory as xyz
+  s xyz dir notes here   save directory with comments
+  g xyz                  go to bookmark xyz or to path xyz
+  p xyz                  go to bookmark/directory xyz
+                         and remember into the directory stack
+  p                      swap to two bookmarks
+  p +n                   rotate nth entry from top to top
+  p -n                   rotate nth entry from bottm to top
+  r xyz                  remove named bookmark
+  d xyz                  display directory name of bookmark xyz
+  sl -l                  long list
+  sl -p                  path list
+  sl "*x"                list all of all bookmarks *x
+  sl -l "*x"             long list all of all bookmarks *x
