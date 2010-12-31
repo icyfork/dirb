@@ -135,7 +135,7 @@ function sl() {
   if [ "$1" == "-l" ]; then
     shift
     ( cd ~/.DirB ;
-      ls -lt $* \
+      ls -lt -- $* 2>/dev/null \
       | sed -e 's/  */ /g' \
             -e '/^total/d' \
             -e 's/^\(... \)\([0-9] \)/\1 \2/' \
@@ -146,7 +146,7 @@ function sl() {
   elif [ "$1" == "-p" ]; then
     shift
     ( cd ~/.DirB ; \
-      for i in $(ls $*); do  echo "$i: $(d $i)"; done \
+      for i in $(ls -- $* 2>/dev/null); do echo "$i: $(d $i)"; done \
     ) \
     | less -FX
   else
